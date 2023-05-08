@@ -8,12 +8,8 @@ pipeline {
     }
     stage('build image') {
       steps {
-        sh 'docker build -t ghcr.io/bkumar08/btest:ghcrtest .'
+        sh 'docker build -t darinpope/jenkins-example-ghcr:8.5-204 .'
       }
     }
-    stage('list docker image') {
-     steps {
-       sh 'docker images'
-     }  
   }
 }
