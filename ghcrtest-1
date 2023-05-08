@@ -11,7 +11,7 @@ pipeline {
     }
     stage('build image') {
       steps {
-        sh 'docker build -t bkumar08/ghcrimage:test .'
+        sh 'docker build -t ghcr.io/bkumar08/ghcrimage:test .'
       }  
     }
     stage('list image') {
@@ -26,12 +26,12 @@ pipeline {
     }
     stage('Image push') { 
       steps { 
-        sh 'docker push bkumar08/ghcrimage:test'
+        sh 'docker push ghcr.io/bkumar08/ghcrimage:test'
       }
     }
     stage('Delete Image') { 
       steps { 
-       sh 'docker rmi -f bkumar08/ghcrimage:test' 
+       sh 'docker rmi -f ghcr.io/bkumar08/ghcrimage:test' 
       }
     }
   }
