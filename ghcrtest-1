@@ -8,8 +8,12 @@ pipeline {
     }
     stage('build image') {
       steps {
-        sh 'docker build -t btest:ghcrtest .'
+        sh 'docker build -t ghcr.io/bkumar08/btest:ghcrtest .'
       }
     }
+    stage('list docker image') {
+     steps {
+       sh 'docker images'
+     }  
   }
 }
