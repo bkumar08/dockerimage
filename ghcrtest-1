@@ -1,5 +1,8 @@
 pipeline {
   agent any
+  environment { 
+    GITHUB_TOKEN=credentials('github-token')
+  }
   stages {
     stage('cleanup') {
       steps {
@@ -14,6 +17,11 @@ pipeline {
     stage('list image') {
       steps {
         sh 'docker images'
+      }
+    }
+    stage('Login to GHCR') { 
+      steps { 
+        sh 'echo $GITHUB_TOKEN_PSW | docker login ghcr.io -u $GITHUB_TOKEN_USR --password-stdin'
       }
     }
   }
