@@ -6,25 +6,28 @@ on:
       - main
 
 jobs:
-  build:
+  docker:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Set up Docker
+        uses: crazy-max/ghaction-setup-docker@v3
+        with:
+          daemon-config: |
+            {
+              "debug": true,
+              "features": {
+                "containerd-snapshotter": true
+              }
+            }
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-
-    - name: Download Qscanner
-      run: |
-        QSCANNER_URL=$(curl $proxy -s https://www.qualys.com/downloads/qscanner/ | grep -ai "gen_cask_artifacts" | sed 's/^.*https/https/' | sed 's/".*//')
-        wget $QSCANNER_URL
-         ls -ltr
-    - name: Build Docker image
-      run: |
-        docker buildx create --use
-        docker buildx inspect
-        docker buildx build --platform linux/amd64,linux/arm64 -t testqacrm:imagestest .
-    - name: List Docker images
-      run: docker images
+      - name: Download Qscanner
+        run: |
+          QSCANNER_URL=$(curl $proxy -s https://www.qualys.com/downloads/qscanner/ | grep -ai "gen_cask_artifacts" | sed 's/^.*https/https/' | sed 's/".*//')
+          wget $QSCANNER_URL
+          ls -ltr
+      - name: Build Docker image
+        run: |
+          docker buildx create --use
+          docker buildx inspect
+          docker buildx build --platform linux/amd64,linux/arm64 -t crmtestimage:multiid .
+          docker images
