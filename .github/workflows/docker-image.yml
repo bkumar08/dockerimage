@@ -1,18 +1,30 @@
-name: Docker Image CI
+name: Build Docker Image
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Download Qscanner
+      run: |
+        QSCANNER_URL=$(curl $proxy -s https://www.qualys.com/downloads/qscanner/ | grep -ai "gen_cask_artifacts" | sed 's/^.*https/https/' | sed 's/".*//')
+        wget $QSCANNER_URL
+         ls -ltr
+    - name: Build Docker image
+      run: |
+        docker buildx create --use
+        docker buildx inspect
+        docker buildx build --platform linux/amd64,linux/arm64 -t testqacrm:imagestest .
+    - name: List Docker images
+      run: docker images
