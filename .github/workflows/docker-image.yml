@@ -27,6 +27,6 @@ jobs:
           ls -ltr
       - name: Build Docker image
         run: |
-          docker buildx build --platform linux/amd64,linux/arm64 -t crmtestimage:multiid --load .
+          docker buildx build --file ./Dockerfile --platform linux/amd64,linux/arm64 -t crmtestimage:multiid --load .
       - name: List docker iamges
         run: docker images
