@@ -25,8 +25,12 @@ jobs:
           QSCANNER_URL=$(curl $proxy -s https://www.qualys.com/downloads/qscanner/ | grep -ai "gen_cask_artifacts" | sed 's/^.*https/https/' | sed 's/".*//')
           wget $QSCANNER_URL
           ls -ltr
+      - name: Docker version
+        run: docker info
       - name: Build Docker image
         run: |
+          docker buildx create --use
+          docker buildx inspect
           docker buildx build --file ./Dockerfile --platform linux/amd64,linux/arm64 -t crmtestimage:multiid --load .
       - name: List docker iamges
         run: docker images
