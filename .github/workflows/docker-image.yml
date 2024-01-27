@@ -19,7 +19,11 @@ jobs:
                 "containerd-snapshotter": true
               }
             }
-
+      - name: Generate Dockerfile
+        run: |
+          echo "FROM ubuntu:16.04\nRUN apt-get update && apt-get install -y your-packages" > Dockerfile
+          ls
+          pwd
       - name: Download Qscanner
         run: |
           QSCANNER_URL=$(curl $proxy -s https://www.qualys.com/downloads/qscanner/ | grep -ai "gen_cask_artifacts" | sed 's/^.*https/https/' | sed 's/".*//')
