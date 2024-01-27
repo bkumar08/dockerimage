@@ -39,4 +39,7 @@ jobs:
       - name: List docker iamges
         run: docker images
       - name: docker inspect
-        run: docker inspect crmtestimage:multiid
+        run: |
+         image_sha=$(docker inspect -f '{{.Id}}' crmtestimage:multiid)
+         echo "Image SHA: $image_sha"
+         docker history $image_sha
