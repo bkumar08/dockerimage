@@ -21,7 +21,7 @@ jobs:
             }
       - name: Generate Dockerfile
         run: |
-          echo "FROM ubuntu:16.04\nRUN apt-get update && apt-get install -y your-packages" > Dockerfile
+          echo "FROM ubuntu:16.04\nRUN apt-get update && apt-get install -y curl" > Dockerfile
           ls
           pwd
       - name: Download Qscanner
@@ -35,6 +35,6 @@ jobs:
         run: |
           docker buildx create --use
           docker buildx inspect
-          docker buildx build --file /home/runner/work/dockerimage/dockerimage/Dockerfile --platform linux/amd64,linux/arm64 -t crmtestimage:multiid .
+          docker buildx build --file /home/runner/work/dockerimage/dockerimage/Dockerfile --platform linux/amd64,linux/arm64 -t crmtestimage:multiid --load .
       - name: List docker iamges
         run: docker images
