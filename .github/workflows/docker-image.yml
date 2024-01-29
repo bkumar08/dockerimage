@@ -45,16 +45,15 @@ jobs:
          image_sha=$(docker inspect -f '{{.Id}}' crmtestimage:multiid)
          echo "Image SHA: $image_sha"
          docker history $image_sha
-         docker save -o multiarchtest.tar $image_sha
-         ls   
-      - name: untar image
-        run: docker load -i $(pwd)/multiarchtest.tar
+      - name: save multi-arch image
+        run: |
+          docker save -o multiarchtest.tar $image_sha
+          ls
       - name: Qscanner token
         run: |
           export QUALYS_ACCESS_TOKEN=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJxdWF5czNiazEiLCJpc3MiOiJxYXMiLCJwb3J0YWxVc2VySWQiOjY0Mjk1MzEsInNlY3JldElkIjoiZDM3MTk1ZDYtYWIyYi00ZjRiLWJhMjEtNjM5YzBjOWUwNTdlIiwicXdlYlVzZXJJZCI6NTA3OTg1NiwiYXVkIjoicWFzIiwiY3VzdG9tZXJJZCI6NTE5ODY4LCJ1c2VyVXVpZCI6ImQ4MDRhMmZhLWQ5MTItNWY0ZC04MjY2LTRiZGZmZWRjYWE5YSIsInN1YnNjcmlwdGlvblV1aWQiOiI0ZTRiNTYyMy0xZjVjLWZiODAtODNhYS0xZmU1NzA0Zjk5MTEiLCJleHAiOjE3MzI3NDQzMzQsInN1YnNjcmlwdGlvbklkIjo0OTIyNjUzLCJ0b2tlblR5cGUiOiJzdWJzY3JpcHRpb24iLCJpYXQiOjE3MDEyMDgzMzQsImp0aSI6ImNhZmE5ZDMwLWIwMmMtNDZhZS05MGRjLWJmMmI3MGY1NTY0NyJ9.0UPBdsQnAgSPgsm7oxgTDFUBaEfCw-Cj0caig_wOs4hF9clcaBs2463ZvAaUo9wj82LHN4WWIVhLaCD_3SWmOw
           echo $QUALYS_ACCESS_TOKEN
       - name: Image scan through Qscanner
         run: |
-         imagesha=$(docker inspect -f '{{.Id}}' crmtestimage:multiid)
-         echo "image id: $imagesha"
+         echo "Qscanner Command: sudo $(pwd)/qscanner tar $(pwd)/multiarchtest.tar --gateway-url https://gateway.qg3.apps.qualys.com/cms/cli/v1.0 --customer-id 4e4b5623-1f5c-fb80-83aa-1fe5704f9911 --access-token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJxdWF5czNiazEiLCJpc3MiOiJxYXMiLCJwb3J0YWxVc2VySWQiOjY0Mjk1MzEsInNlY3JldElkIjoiZWM1ODFlMjktZTg1ZC00YjNmLTkyZDQtYjdjNGVmMWE5NmNmIiwicXdlYlVzZXJJZCI6NTA3OTg1NiwiYXVkIjoicWFzIiwiY3VzdG9tZXJJZCI6NTE5ODY4LCJ1c2VyVXVpZCI6ImQ4MDRhMmZhLWQ5MTItNWY0ZC04MjY2LTRiZGZmZWRjYWE5YSIsInN1YnNjcmlwdGlvblV1aWQiOiI0ZTRiNTYyMy0xZjVjLWZiODAtODNhYS0xZmU1NzA0Zjk5MTEiLCJleHAiOjE3Mzc4OTIwNTcsInN1YnNjcmlwdGlvbklkIjo0OTIyNjUzLCJ0b2tlblR5cGUiOiJzdWJzY3JpcHRpb24iLCJpYXQiOjE3MDYzMzQ0NTcsImp0aSI6IjJmMzQxY2VhLWI4MzgtNGVlZi05YmQzLWY5MjQ0NDhhYmY1NSJ9.w06Px2M6k2wjuWOXaV71xOeLyM4mxa_FYoJ3ninxr938KL2MXlYva-JjpV70HK4vK8qFMt7fHaeH8REeUPk8Hg"
          sudo $(pwd)/qscanner tar $(pwd)/multiarchtest.tar --gateway-url https://gateway.qg3.apps.qualys.com/cms/cli/v1.0 --customer-id 4e4b5623-1f5c-fb80-83aa-1fe5704f9911 --access-token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJxdWF5czNiazEiLCJpc3MiOiJxYXMiLCJwb3J0YWxVc2VySWQiOjY0Mjk1MzEsInNlY3JldElkIjoiZWM1ODFlMjktZTg1ZC00YjNmLTkyZDQtYjdjNGVmMWE5NmNmIiwicXdlYlVzZXJJZCI6NTA3OTg1NiwiYXVkIjoicWFzIiwiY3VzdG9tZXJJZCI6NTE5ODY4LCJ1c2VyVXVpZCI6ImQ4MDRhMmZhLWQ5MTItNWY0ZC04MjY2LTRiZGZmZWRjYWE5YSIsInN1YnNjcmlwdGlvblV1aWQiOiI0ZTRiNTYyMy0xZjVjLWZiODAtODNhYS0xZmU1NzA0Zjk5MTEiLCJleHAiOjE3Mzc4OTIwNTcsInN1YnNjcmlwdGlvbklkIjo0OTIyNjUzLCJ0b2tlblR5cGUiOiJzdWJzY3JpcHRpb24iLCJpYXQiOjE3MDYzMzQ0NTcsImp0aSI6IjJmMzQxY2VhLWI4MzgtNGVlZi05YmQzLWY5MjQ0NDhhYmY1NSJ9.w06Px2M6k2wjuWOXaV71xOeLyM4mxa_FYoJ3ninxr938KL2MXlYva-JjpV70HK4vK8qFMt7fHaeH8REeUPk8Hg
