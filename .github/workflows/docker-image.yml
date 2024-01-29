@@ -47,6 +47,8 @@ jobs:
          docker history $image_sha
       - name: save multi-arch image
         run: |
+          image_sha=$(docker inspect -f '{{.Id}}' crmtestimage:multiid)
+          echo "Image ID: $image_sha"
           docker save -o multiarchtest.tar $image_sha
           ls
       - name: Qscanner token
