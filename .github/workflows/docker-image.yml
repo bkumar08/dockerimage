@@ -38,7 +38,7 @@ jobs:
         run: |
           docker buildx create --use
           docker buildx inspect
-          docker buildx build --file /home/runner/work/dockerimage/dockerimage/Dockerfile --platform linux/amd64 -t crmtestimage:multiid --load .
+          docker build --file /home/runner/work/dockerimage/dockerimage/Dockerfile --platform linux/amd64 -t crmtestimage:multiid .
       - name: List docker images
         run: docker images
       - name: docker inspect
