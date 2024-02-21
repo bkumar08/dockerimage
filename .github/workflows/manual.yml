@@ -12,11 +12,11 @@ jobs:
       - name: Uninstall previous docker
         run: |
           docker system prune --all --force --volumes
-          systemctl stop docker
-          apt-get purge docker-ce -y
-          apt-get autoremove --purge docker-ce -y
-          rm -rf /etc/docker
-          rm -rf /var/lib/docker
+          sudo systemctl stop docker
+          sudo apt-get purge docker-ce -y
+          sudo apt-get autoremove --purge docker-ce -y
+          sudo rm -rf /etc/docker
+          sudo rm -rf /var/lib/docker
       - name: Install latest docker for experimental feature
         run: |
           sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
