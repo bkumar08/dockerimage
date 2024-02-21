@@ -11,10 +11,7 @@ jobs:
     steps:
       - name: Uninstall previous docker
         run: |
-          docker system prune --all --volumes
-          docker rm -f $(docker ps -aq)
-          docker rmi -f $(docker images -aq)
-          docker volume rm -f $(docker volume ls -q)
+          docker system prune --all --force --volumes
           systemctl stop docker
           apt-get purge docker-ce -y
           apt-get autoremove --purge docker-ce -y
