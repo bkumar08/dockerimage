@@ -35,8 +35,9 @@ jobs:
       - name: enabling containerd with docker
         run: |
           echo $'{\n    "experimental": true\n    "features": {\n    "containerd-snapshotter": true\n}\n}' | sudo tee /etc/docker/daemon.json
-          sudo service docker restart
+          sudo systemctl restart docker
           docker version -f '{{.Server.Experimental}}'
+          docker info -f '{{ .DriverStatus }}'
       - name: Generate Dockerfile
         run: |
           echo -e "FROM ubuntu:20.04\nRUN apt-get update && apt-get install -y curl" > Dockerfile
