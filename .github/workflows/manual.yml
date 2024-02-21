@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker
-        uses: docker@latest
+        uses: docker
         with:
           daemon-config: |
             {
