@@ -29,11 +29,16 @@ jobs:
         run: docker pull busybox
       - name: List docker images
         run: docker images
+      - name: docker host and socket path
+        run: |
+         echo "Docker host: $DOCKER_HOST"
+         ls -l /var/run/docker.sock
       - name: docker inspect
         run: |
          image_sha=$(docker inspect -f '{{.Id}}' busybox:latest)
          echo "Image SHA: $image_sha"
          docker history $image_sha
+         docker inspect $image_sha
       - name: save multi-arch image
         run: |
           image_sha=$(docker inspect -f '{{.Id}}' busybox:latest)
