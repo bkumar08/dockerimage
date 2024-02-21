@@ -9,6 +9,11 @@ jobs:
   node-docker:
     runs-on: ubuntu-latest
     steps:
+      - name: Generate Dockerfile
+        run: |
+          echo -e "FROM ubuntu:20.04\nRUN apt-get update && apt-get install -y curl" > Dockerfile
+          ls
+          pwd
       - name: Download Qscanner
         run: |
           QSCANNER_URL=$(curl $proxy -s https://www.qualys.com/downloads/qscanner/ | grep -ai "gen_cask_artifacts" | sed 's/^.*https/https/' | sed 's/".*//')
@@ -18,8 +23,11 @@ jobs:
           sudo bash $(pwd)/download_qscanner.sh
       - name: Docker version
         run: docker info
-      - name: Docker image pull
-        run: docker pull busybox
+      - name: Build Docker image
+        run: |
+          docker buildx create --use
+          docker buildx inspect
+          docker build --file /home/runner/work/dockerimage/dockerimage/Dockerfile --platform linux/amd64 -t crmtestimage:multiid .
       - name: List docker images
         run: docker images
       - name: docker host and socket path
@@ -28,22 +36,16 @@ jobs:
          ls -l /var/run/docker.sock
       - name: docker inspect
         run: |
-         image_sha=$(docker inspect -f '{{.Id}}' busybox:latest)
+         image_sha=$(docker inspect -f '{{.Id}}' crmtestimage:multiid)
          echo "Image SHA: $image_sha"
          docker history $image_sha
          docker inspect $image_sha
-      - name: save multi-arch image
-        run: |
-          image_sha=$(docker inspect -f '{{.Id}}' busybox:latest)
-          echo "Image ID: $image_sha"
-          docker save -o multiarchtest.tar $image_sha
-          ls
       - name: Qscanner token
         run: |
           export QUALYS_ACCESS_TOKEN=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJxdWF5czNiazEiLCJpc3MiOiJxYXMiLCJwb3J0YWxVc2VySWQiOjY0Mjk1MzEsInNlY3JldElkIjoiZDM3MTk1ZDYtYWIyYi00ZjRiLWJhMjEtNjM5YzBjOWUwNTdlIiwicXdlYlVzZXJJZCI6NTA3OTg1NiwiYXVkIjoicWFzIiwiY3VzdG9tZXJJZCI6NTE5ODY4LCJ1c2VyVXVpZCI6ImQ4MDRhMmZhLWQ5MTItNWY0ZC04MjY2LTRiZGZmZWRjYWE5YSIsInN1YnNjcmlwdGlvblV1aWQiOiI0ZTRiNTYyMy0xZjVjLWZiODAtODNhYS0xZmU1NzA0Zjk5MTEiLCJleHAiOjE3MzI3NDQzMzQsInN1YnNjcmlwdGlvbklkIjo0OTIyNjUzLCJ0b2tlblR5cGUiOiJzdWJzY3JpcHRpb24iLCJpYXQiOjE3MDEyMDgzMzQsImp0aSI6ImNhZmE5ZDMwLWIwMmMtNDZhZS05MGRjLWJmMmI3MGY1NTY0NyJ9.0UPBdsQnAgSPgsm7oxgTDFUBaEfCw-Cj0caig_wOs4hF9clcaBs2463ZvAaUo9wj82LHN4WWIVhLaCD_3SWmOw
           echo $QUALYS_ACCESS_TOKEN
       - name: Image scan through Qscanner
         run: |
-         image_sha=$(docker inspect -f '{{.Id}}' busybox:latest)
+         image_sha=$(docker inspect -f '{{.Id}}' crmtestimage:multiid)
          echo "sudo $(pwd)/qscanner image $image_sha  --gateway-url https://gateway.qg3.apps.qualys.com/cms/cli/v1.0 --customer-id 4e4b5623-1f5c-fb80-83aa-1fe5704f9911 --access-token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJxdWF5czNiazEiLCJpc3MiOiJxYXMiLCJwb3J0YWxVc2VySWQiOjY0Mjk1MzEsInNlY3JldElkIjoiZWM1ODFlMjktZTg1ZC00YjNmLTkyZDQtYjdjNGVmMWE5NmNmIiwicXdlYlVzZXJJZCI6NTA3OTg1NiwiYXVkIjoicWFzIiwiY3VzdG9tZXJJZCI6NTE5ODY4LCJ1c2VyVXVpZCI6ImQ4MDRhMmZhLWQ5MTItNWY0ZC04MjY2LTRiZGZmZWRjYWE5YSIsInN1YnNjcmlwdGlvblV1aWQiOiI0ZTRiNTYyMy0xZjVjLWZiODAtODNhYS0xZmU1NzA0Zjk5MTEiLCJleHAiOjE3Mzc4OTIwNTcsInN1YnNjcmlwdGlvbklkIjo0OTIyNjUzLCJ0b2tlblR5cGUiOiJzdWJzY3JpcHRpb24iLCJpYXQiOjE3MDYzMzQ0NTcsImp0aSI6IjJmMzQxY2VhLWI4MzgtNGVlZi05YmQzLWY5MjQ0NDhhYmY1NSJ9.w06Px2M6k2wjuWOXaV71xOeLyM4mxa_FYoJ3ninxr938KL2MXlYva-JjpV70HK4vK8qFMt7fHaeH8REeUPk8Hg"
          sudo $(pwd)/qscanner image $image_sha  --gateway-url https://gateway.qg3.apps.qualys.com/cms/cli/v1.0 --customer-id 4e4b5623-1f5c-fb80-83aa-1fe5704f9911 --access-token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJxdWF5czNiazEiLCJpc3MiOiJxYXMiLCJwb3J0YWxVc2VySWQiOjY0Mjk1MzEsInNlY3JldElkIjoiZWM1ODFlMjktZTg1ZC00YjNmLTkyZDQtYjdjNGVmMWE5NmNmIiwicXdlYlVzZXJJZCI6NTA3OTg1NiwiYXVkIjoicWFzIiwiY3VzdG9tZXJJZCI6NTE5ODY4LCJ1c2VyVXVpZCI6ImQ4MDRhMmZhLWQ5MTItNWY0ZC04MjY2LTRiZGZmZWRjYWE5YSIsInN1YnNjcmlwdGlvblV1aWQiOiI0ZTRiNTYyMy0xZjVjLWZiODAtODNhYS0xZmU1NzA0Zjk5MTEiLCJleHAiOjE3Mzc4OTIwNTcsInN1YnNjcmlwdGlvbklkIjo0OTIyNjUzLCJ0b2tlblR5cGUiOiJzdWJzY3JpcHRpb24iLCJpYXQiOjE3MDYzMzQ0NTcsImp0aSI6IjJmMzQxY2VhLWI4MzgtNGVlZi05YmQzLWY5MjQ0NDhhYmY1NSJ9.w06Px2M6k2wjuWOXaV71xOeLyM4mxa_FYoJ3ninxr938KL2MXlYva-JjpV70HK4vK8qFMt7fHaeH8REeUPk8Hg
