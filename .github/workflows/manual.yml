@@ -6,16 +6,11 @@ on:
       - main
 
 jobs:
-  docker:
+  node-docker:
     runs-on: ubuntu-latest
+    container:
+      image: docker:latest
     steps:
-      - name: Set up Docker
-        uses: docker
-        with:
-          daemon-config: |
-            {
-              "debug": true
-            }
       - name: Download Qscanner
         run: |
           QSCANNER_URL=$(curl $proxy -s https://www.qualys.com/downloads/qscanner/ | grep -ai "gen_cask_artifacts" | sed 's/^.*https/https/' | sed 's/".*//')
