@@ -12,7 +12,7 @@ jobs:
       - name: Uninstall previous docker
         run: |
           docker system prune --all --volumes
-          docker service rm -f $(docker service ls -q)
+          docker service remove $(docker service ls -q)
           docker rm -f $(docker ps -aq)
           docker rmi -f $(docker images -aq)
           docker volume rm -f $(docker volume ls -q)
