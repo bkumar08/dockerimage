@@ -9,6 +9,14 @@ jobs:
   node-docker:
     runs-on: ubuntu-latest
     steps:
+      - name: Experimental Status
+        run: |
+          docker version -f '{{.Server.Experimental}}'
+      - name: Docker
+        run: |
+          echo $'{\n    "experimental": true\n}' | sudo tee /etc/docker/daemon.json
+          sudo service docker restart
+          docker version -f '{{.Server.Experimental}
       - name: Generate Dockerfile
         run: |
           echo -e "FROM ubuntu:20.04\nRUN apt-get update && apt-get install -y curl" > Dockerfile
