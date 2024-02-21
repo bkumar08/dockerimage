@@ -8,8 +8,6 @@ on:
 jobs:
   node-docker:
     runs-on: ubuntu-latest
-    container:
-      image: docker:latest
     steps:
       - name: Download Qscanner
         run: |
