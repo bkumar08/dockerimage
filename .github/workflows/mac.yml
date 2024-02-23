@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Install latest docker for experimental feature
         run: |
-          sudo curl -LO https://desktop.docker.com/mac/main/amd64/137060/Docker.dmg?_gl=1*mpaazh*_ga*OTg3MDkzOTk2LjE3MDE2NzMyNjY.*_ga_XJWPQMJYHQ*MTcwODY3OTAwMC44Ni4xLjE3MDg2ODAxNDkuNjAuMC4w
+          sudo curl -LO https://desktop.docker.com/mac/main/amd64/137060/Docker.dmg
           sudo hdiutil attach Docker.dmg
           sudo /Volumes/Docker/Docker.app/Contents/MacOS/install
           sudo hdiutil detach /Volumes/Docker
