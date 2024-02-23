@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Install latest docker for experimental feature
         run: |
-          sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
           brew cask install docker
           docker --version
       - name: Docker version
