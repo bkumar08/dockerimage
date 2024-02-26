@@ -34,7 +34,7 @@ jobs:
           docker version -f '{{.Server.Experimental}}'
       - name: enabling containerd with docker
         run: |
-          echo $'{\n    "experimental": true,\n    "features": {\n    "containerd-snapshotter": true\n    }\n}' | sudo tee /etc/docker/daemon.json
+          echo $'{\n "exec-opts": ["native.cgroupdriver=cgroupfs"],\n   "cgroup-parent": "/actions_job",\n    "experimental": true,\n    "features": {\n    "containerd-snapshotter": true\n    }\n}' | sudo tee /etc/docker/daemon.json
           sudo systemctl restart docker
           docker version -f '{{.Server.Experimental}}'
           docker info -f '{{ .DriverStatus }}'
