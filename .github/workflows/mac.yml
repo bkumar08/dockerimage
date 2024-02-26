@@ -13,6 +13,7 @@ jobs:
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
           brew install docker
+          open -a docker
           docker --version
       - name: Docker version
         run: docker info
