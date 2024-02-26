@@ -38,6 +38,8 @@ jobs:
           sudo systemctl restart docker
           docker version -f '{{.Server.Experimental}}'
           docker info -f '{{ .DriverStatus }}'
+      - name: Docker version
+        run: docker info
       - name: Generate Dockerfile
         run: |
           echo -e "FROM alpine\nCMD ["echo", "Hello StackOverflow!"]" > Dockerfile
