@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Install latest docker for experimental feature
         run: |
-          brew install --cask docker virtualbox 
+          brew install --cask docker virtualbox@5.0.12 
           brew install docker-machine
           docker-machine create --driver virtualbox default
           docker-machine restart
