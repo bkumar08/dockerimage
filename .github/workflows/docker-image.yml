@@ -53,7 +53,7 @@ jobs:
           sockpath=$(echo $sockpath | awk -v srch="data" -v repl="docker.sock" '{ sub(srch,repl,$0); print $0 }')
           echo $sockpath
           sudo mv /var/run/docker.sock /
-          sudo ln -s /var/run/docker.sock $sockpath
+          sudo ln -s $sockpath /var/run/docker.sock
           export DOCKER_HOST=unix://$sockpath
           echo $DOCKER_HOST
           export QUALYS_ACCESS_TOKEN=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJxdWF5czNiazEiLCJpc3MiOiJxYXMiLCJwb3J0YWxVc2VySWQiOjY0Mjk1MzEsInNlY3JldElkIjoiZDM3MTk1ZDYtYWIyYi00ZjRiLWJhMjEtNjM5YzBjOWUwNTdlIiwicXdlYlVzZXJJZCI6NTA3OTg1NiwiYXVkIjoicWFzIiwiY3VzdG9tZXJJZCI6NTE5ODY4LCJ1c2VyVXVpZCI6ImQ4MDRhMmZhLWQ5MTItNWY0ZC04MjY2LTRiZGZmZWRjYWE5YSIsInN1YnNjcmlwdGlvblV1aWQiOiI0ZTRiNTYyMy0xZjVjLWZiODAtODNhYS0xZmU1NzA0Zjk5MTEiLCJleHAiOjE3MzI3NDQzMzQsInN1YnNjcmlwdGlvbklkIjo0OTIyNjUzLCJ0b2tlblR5cGUiOiJzdWJzY3JpcHRpb24iLCJpYXQiOjE3MDEyMDgzMzQsImp0aSI6ImNhZmE5ZDMwLWIwMmMtNDZhZS05MGRjLWJmMmI3MGY1NTY0NyJ9.0UPBdsQnAgSPgsm7oxgTDFUBaEfCw-Cj0caig_wOs4hF9clcaBs2463ZvAaUo9wj82LHN4WWIVhLaCD_3SWmOw
