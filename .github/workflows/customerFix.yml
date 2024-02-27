@@ -22,7 +22,7 @@ jobs:
             }
       - name: Generate Dockerfile
         run: |
-          echo -e "FROM ubuntu:20.04\nRUN apt-get update && apt-get install -y curl" > Dockerfile
+          echo -e "FROM alpine\nCMD ["echo", "Hello StackOverflow!"]" > Dockerfile
           ls
           pwd
       - name: Download Qscanner
