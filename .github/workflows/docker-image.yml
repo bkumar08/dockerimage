@@ -60,7 +60,7 @@ jobs:
           echo $QUALYS_ACCESS_TOKEN
       - name: Image scan through Qscanner
         run: |
-        image_sha=$(docker inspect -f '{{.Id}}' alpine:latest)
+         image_sha=$(docker inspect -f '{{.Id}}' alpine:latest)
          sockpath=$(docker info -f '{{.DockerRootDir}}')
          sockpath=$(echo $sockpath | awk -v srch="data" -v repl="docker.sock" '{ sub(srch,repl,$0); print $0 }')
          echo $sockpath
