@@ -66,4 +66,4 @@ jobs:
          sockpath=$(echo $sockpath | awk -v srch="data" -v repl="docker.sock" '{ sub(srch,repl,$0); print $0 }')
          echo $sockpath
          echo "sudo $(pwd)/linux-amd64/qscanner image $image_sha --pod US3  --access-token $QUALYS_ACCESS_TOKEN"
-         sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image $image_sha --pod US3 --access-token $QUALYS_ACCESS_TOKEN
+         sudo -E DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image $image_sha --pod US3 --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }}
