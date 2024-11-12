@@ -61,15 +61,15 @@ jobs:
           echo "$QUALYS_TOKEN"
       - name: Image scan through Qscanner
         env:
-          QUALYS_ACCESS_TOKEN: ${{ secrets.QUALYS_ACCESS_TOKEN }}  # Inject secret here
+          QUALYS_ACCESS_TOKEN: ${{ secrets.QUALYS_ACCESS_TOKEN }}  # Inject the secret
         run: |
           # Get image ID from docker
           image_sha=$(docker inspect -f '{{.Id}}' alpine:latest)
           sockpath=$(docker info -f '{{.DockerRootDir}}')
           sockpath=$(echo $sockpath | awk -v srch="data" -v repl="docker.sock" '{ sub(srch,repl,$0); print $0 }')
           
-          echo $sockpath
+          echo "Docker socket path: $sockpath"
           echo "Running qscanner with image_sha: $image_sha"
 
-          # Ensure the token is passed in the sudo command
-          sudo -E DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image $image_sha --pod US3 --access-token "$QUALYS_ACCESS_TOKEN"
+          # Ensure the token is passed in the sudo command correctly
+          sudo -E DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image $image_sha --pod US3 --access-token $QUALYS_ACCESS_TOKEN
