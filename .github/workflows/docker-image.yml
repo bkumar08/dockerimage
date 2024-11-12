@@ -53,15 +53,15 @@ jobs:
           echo "Image ID: $image_sha"
           docker save -o multiarchtest.tar $image_sha
           ls
-      - name: Qscanner token
+      - name: Use Qualys Access Token
         run: |
-          export QUALYS_ACCESS_TOKEN=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJxdWF5czNiazEiLCJpc3MiOiJxYXMiLCJwb3J0YWxVc2VySWQiOjY0Mjk1MzEsInNlY3JldElkIjoiOGI3ZDg2NjQtMjcyZC00ZjRkLTg5MDMtZDBmZTI3YTMxOTU3IiwicXdlYlVzZXJJZCI6NTA3OTg1NiwiYXVkIjoicWFzIiwiY3VzdG9tZXJJZCI6NTE5ODY4LCJ1c2VyVXVpZCI6ImQ4MDRhMmZhLWQ5MTItNWY0ZC04MjY2LTRiZGZmZWRjYWE5YSIsInN1YnNjcmlwdGlvblV1aWQiOiI0ZTRiNTYyMy0xZjVjLWZiODAtODNhYS0xZmU1NzA0Zjk5MTEiLCJleHAiOjE3NTg2NzUwODcsInN1YnNjcmlwdGlvbklkIjo0OTIyNjUzLCJ0b2tlblR5cGUiOiJzdWJzY3JpcHRpb24iLCJpYXQiOjE3MjcxMTc0ODcsImp0aSI6IjAyZTMyZTMxLTEzOGYtNDNlNy1hMmE4LWY1OTNiZGZhZGZhOCJ9.e0thBA2jIg18pgtfGxffj8rIilb34C5YCXewMb2gTv7fD7qJxZR1YbGETprutOpI8FwxkntzJfkKHHg5QL2LVg
-          echo $QUALYS_ACCESS_TOKEN
+          echo "Using Qualys Access Token"
+          echo "${{ secrets.QUALYS_ACCESS_TOKEN }}"
       - name: Image scan through Qscanner
         run: |
          image_sha=$(docker inspect -f '{{.Id}}' alpine:latest)
          sockpath=$(docker info -f '{{.DockerRootDir}}')
          sockpath=$(echo $sockpath | awk -v srch="data" -v repl="docker.sock" '{ sub(srch,repl,$0); print $0 }')
          echo $sockpath
-         echo "sudo $(pwd)/linux-amd64/qscanner image $image_sha --pod US3  --access-token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJxdWF5czNiazEiLCJpc3MiOiJxYXMiLCJwb3J0YWxVc2VySWQiOjY0Mjk1MzEsInNlY3JldElkIjoiOGI3ZDg2NjQtMjcyZC00ZjRkLTg5MDMtZDBmZTI3YTMxOTU3IiwicXdlYlVzZXJJZCI6NTA3OTg1NiwiYXVkIjoicWFzIiwiY3VzdG9tZXJJZCI6NTE5ODY4LCJ1c2VyVXVpZCI6ImQ4MDRhMmZhLWQ5MTItNWY0ZC04MjY2LTRiZGZmZWRjYWE5YSIsInN1YnNjcmlwdGlvblV1aWQiOiI0ZTRiNTYyMy0xZjVjLWZiODAtODNhYS0xZmU1NzA0Zjk5MTEiLCJleHAiOjE3NTg2NzUwODcsInN1YnNjcmlwdGlvbklkIjo0OTIyNjUzLCJ0b2tlblR5cGUiOiJzdWJzY3JpcHRpb24iLCJpYXQiOjE3MjcxMTc0ODcsImp0aSI6IjAyZTMyZTMxLTEzOGYtNDNlNy1hMmE4LWY1OTNiZGZhZGZhOCJ9.e0thBA2jIg18pgtfGxffj8rIilb34C5YCXewMb2gTv7fD7qJxZR1YbGETprutOpI8FwxkntzJfkKHHg5QL2LVg"
-         sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image $image_sha --pod US3 --access-token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJxdWF5czNiazEiLCJpc3MiOiJxYXMiLCJwb3J0YWxVc2VySWQiOjY0Mjk1MzEsInNlY3JldElkIjoiOGI3ZDg2NjQtMjcyZC00ZjRkLTg5MDMtZDBmZTI3YTMxOTU3IiwicXdlYlVzZXJJZCI6NTA3OTg1NiwiYXVkIjoicWFzIiwiY3VzdG9tZXJJZCI6NTE5ODY4LCJ1c2VyVXVpZCI6ImQ4MDRhMmZhLWQ5MTItNWY0ZC04MjY2LTRiZGZmZWRjYWE5YSIsInN1YnNjcmlwdGlvblV1aWQiOiI0ZTRiNTYyMy0xZjVjLWZiODAtODNhYS0xZmU1NzA0Zjk5MTEiLCJleHAiOjE3NTg2NzUwODcsInN1YnNjcmlwdGlvbklkIjo0OTIyNjUzLCJ0b2tlblR5cGUiOiJzdWJzY3JpcHRpb24iLCJpYXQiOjE3MjcxMTc0ODcsImp0aSI6IjAyZTMyZTMxLTEzOGYtNDNlNy1hMmE4LWY1OTNiZGZhZGZhOCJ9.e0thBA2jIg18pgtfGxffj8rIilb34C5YCXewMb2gTv7fD7qJxZR1YbGETprutOpI8FwxkntzJfkKHHg5QL2LVg
+         echo "sudo $(pwd)/linux-amd64/qscanner image $image_sha --pod US3  --access-token "${{ secrets.QUALYS_ACCESS_TOKEN }}" "
+         sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image $image_sha --pod US3 --access-token "${{ secrets.QUALYS_ACCESS_TOKEN }}"
