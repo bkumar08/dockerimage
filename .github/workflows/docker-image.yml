@@ -27,19 +27,19 @@ jobs:
           pwd
       - name: Download Qscanner
         run: |
-          wget https://www.qualys.com/qscanner/download/v2.0.0/download_qscanner.sh
+          wget https://www.qualys.com/qscanner/download/v4.2.0/download_qscanner.sh
           ls -ltr
           pwd
           sudo bash $(pwd)/download_qscanner.sh
       - name: Docker version
-        run: |
-          sockpath=$(docker info -f '{{.DockerRootDir}}')
-          sockpath=$(echo $sockpath | awk -v srch="data" -v repl="docker.sock" '{ sub(srch,repl,$0); print $0 }')
+        run: docker info
+      - name: Docker image pull
+        run: docker pull alpine:latest  
       - name: Build Docker image
         run: |
+          docker buildx create --use
+          docker buildx inspect
           docker buildx build --file /home/runner/work/dockerimage/dockerimage/Dockerfile --platform linux/amd64,linux/arm64 -t crmtestimage:multiid --load .
-      - name: List docker images
-        run: docker images
       - name: docker inspect
         run: |
          image_sha=$(docker inspect -f '{{.Id}}' crmtestimage:multiid)
