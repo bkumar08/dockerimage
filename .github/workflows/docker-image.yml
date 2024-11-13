@@ -70,4 +70,4 @@ jobs:
           echo "Running qscanner with image_sha: $image_sha"
 
           # Ensure the token is passed in the sudo command correctly
-          sudo -E DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image $image_sha --gateway-url https://gateway.qg3.apps.qualys.com/cms/cli/v1.0 --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }}
+          sudo -E DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image $image_sha --gateway-url https://gateway.qg3.apps.qualys.com/cms/cli/v1.0 --offline-scan --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }}
