@@ -58,8 +58,6 @@ jobs:
           echo "Using Qualys Access Token"
           echo "Qscanner secret is : ${{ secrets.QUALYS_ACCESS_TOKEN }}"
       - name: Image scan through Qscanner
-        env:
-          QUALYS_ACCESS_TOKEN: ${{ secrets.QUALYS_ACCESS_TOKEN }}  # Inject the secret
         run: |
           # Get image ID from docker
           image_sha=$(docker inspect -f '{{.Id}}' alpine:latest)
