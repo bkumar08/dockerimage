@@ -66,4 +66,4 @@ jobs:
           echo "Docker socket path: $sockpath"
           echo "Running qscanner with image_sha: $image_sha"
           # Ensure the token is passed in the sudo command correctly
-          sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image $image_sha --pod US3 --offline-scan --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }}
+          sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image $image_sha --pod US2 --offline-scan --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }}
