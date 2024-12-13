@@ -47,6 +47,7 @@ jobs:
          image_sha=$(docker inspect -f '{{.Id}}' alpine:latest)
          echo "Image SHA: $image_sha"
          docker history $image_sha
+         docker inspect $image_sha
       - name: save multi-arch image
         run: |
           image_sha=$(docker inspect -f '{{.Id}}' crmtestimage:multiid)
