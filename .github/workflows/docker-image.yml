@@ -44,22 +44,20 @@ jobs:
         run: |
           repo="birutest/qscannerscan"
           tags=$(curl -s "https://hub.docker.com/v2/repositories/$repo/tags?page_size=100" | jq -r '.results[].name')
+          
+          # Convert the tags into a format that can be easily used in a loop
           echo "Tags: $tags"
-          echo "::set-output name=tags::$tags"
+          echo "$tags" > tags.txt
 
       - name: Pull and Scan Images with Qscanner
         run: |
-          # Loop through each tag and run the qscanner for each image
-          tags="${{ steps.tags.outputs.tags }}"
+          # Read the tags from the file and process each one
           index=1
-          total_tags=$(echo "$tags" | wc -w)  # Use wc -w to count words (tags)
-
-          # Debug: Print tags and total_tags
+          total_tags=$(wc -l < tags.txt)  # Get the number of tags from the file
           echo "Total tags to scan: $total_tags"
-          echo "Tags: $tags"
-
-          # Loop through each tag and scan
-          for tag in $tags; do
+          
+          # Loop over each tag and scan
+          while IFS= read -r tag; do
             echo "Pulling image: birutest/qscannerscan:$tag"
             docker pull birutest/qscannerscan:$tag  # Ensure the image is pulled first
 
@@ -75,6 +73,6 @@ jobs:
             sockpath=$(echo $sockpath | awk -v srch="data" -v repl="docker.sock" '{ sub(srch,repl,$0); print $0 }')
             echo "Docker socket path: $sockpath"
             echo "Running qscanner with image_sha: $image_sha"
-            sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image birutest/qscannerscan:$tag --pod US2 --file-logging --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }}
+            sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image birutest/qscannerscan:$tag --pod US2 --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }} --file-logging
             index=$((index+1))
-          done
+          done < tags.txt
