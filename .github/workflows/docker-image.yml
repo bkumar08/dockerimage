@@ -1,13 +1,15 @@
-name: Build Docker Image
+name: Build and Scan Docker Images
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   docker:
     runs-on: ubuntu-latest
+
     steps:
       - name: Set up Docker
         uses: crazy-max/ghaction-setup-docker@v3
@@ -20,50 +22,44 @@ jobs:
                 "containerd-snapshotter": true
               }
             }
+
       - name: Generate Dockerfile
         run: |
           echo -e "FROM ubuntu:20.04\nRUN apt-get update && apt-get install -y curl" > Dockerfile
           ls
           pwd
+
+      - name: Docker version
+        run: docker info
+
       - name: Download Qscanner
         run: |
-          wget https://www.qualys.com/qscanner/download/v4.2.0/download_qscanner.sh
+          wget https://www.qualys.com/qscanner/download/v4.4.0/download_qscanner.sh
           ls -ltr
           pwd
           sudo bash $(pwd)/download_qscanner.sh
-      - name: Docker version
-        run: docker info
-      - name: Docker image pull
-        run: docker pull alpine:latest  
-      - name: Build Docker image
+
+      - name: Fetch tags from Docker Hub
+        id: tags
         run: |
-          docker buildx create --use
-          docker buildx inspect
-          docker buildx build --file /home/runner/work/dockerimage/dockerimage/Dockerfile --platform linux/amd64,linux/arm64 -t crmtestimage:multiid --load .
-      - name: List docker images
-        run: docker images
-      - name: docker inspect
+          repo="birutest/qscannerscan"
+          tags=$(curl -s "https://hub.docker.com/v2/repositories/$repo/tags?page_size=100" | jq -r '.results[].name')
+          echo "::set-output name=tags::$tags"
+
+      - name: Scan images with Qscanner
         run: |
-         image_sha=$(docker inspect -f '{{.Id}}' alpine:latest)
-         echo "Image SHA: $image_sha"
-         docker history $image_sha
-      - name: save multi-arch image
-        run: |
-          image_sha=$(docker inspect -f '{{.Id}}' crmtestimage:multiid)
-          echo "Image ID: $image_sha"
-          docker save -o multiarchtest.tar $image_sha
-          ls
-      - name: Use Qualys Access Token
-        run: |
-          echo "Using Qualys Access Token"
-          echo "Qscanner secret is : ${{ secrets.QUALYS_ACCESS_TOKEN }}"
-      - name: Image scan through Qscanner
-        run: |
-          # Get image ID from docker
-          image_sha=$(docker inspect -f '{{.Id}}' alpine:latest)
-          sockpath=$(docker info -f '{{.DockerRootDir}}')
-          sockpath=$(echo $sockpath | awk -v srch="data" -v repl="docker.sock" '{ sub(srch,repl,$0); print $0 }')
-          echo "Docker socket path: $sockpath"
-          echo "Running qscanner with image_sha: $image_sha"
-          # Ensure the token is passed in the sudo command correctly
-          sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image $image_sha --pod US2 --offline-scan  --log-level debug --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }}
+          # Loop through each tag and run the qscanner for each image
+          tags="${{ steps.tags.outputs.tags }}"
+          index=1
+          total_tags=$(echo "$tags" | wc -l)
+          
+          for tag in $tags; do
+            image_sha=$(docker inspect -f '{{.Id}}' birutest/qscannerscan:$tag)
+            echo "Scanning image $index/$total_tags: birutest/qscannerscan:$tag ..."
+            sockpath=$(docker info -f '{{.DockerRootDir}}')
+            sockpath=$(echo $sockpath | awk -v srch="data" -v repl="docker.sock" '{ sub(srch,repl,$0); print $0 }')
+            echo "Docker socket path: $sockpath"
+            echo "Running qscanner with image_sha: $image_sha"
+            sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image birutest/qscannerscan:$tag --pod US2 --offline-scan --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }}
+            index=$((index+1))
+          done
