@@ -34,7 +34,7 @@ jobs:
 
       - name: Download Qscanner
         run: |
-          wget https://www.qualys.com/qscanner/download/v4.4.0/download_qscanner.sh
+          wget https://www.qualys.com/qscanner/download/v4.2.0/download_qscanner.sh
           ls -ltr
           pwd
           sudo bash $(pwd)/download_qscanner.sh
@@ -46,7 +46,7 @@ jobs:
           tags=$(curl -s "https://hub.docker.com/v2/repositories/$repo/tags?page_size=100" | jq -r '.results[].name')
           echo "::set-output name=tags::$tags"
 
-      - name: Scan images with Qscanner
+      - name: Pull and Scan Images with Qscanner
         run: |
           # Loop through each tag and run the qscanner for each image
           tags="${{ steps.tags.outputs.tags }}"
@@ -54,12 +54,21 @@ jobs:
           total_tags=$(echo "$tags" | wc -l)
           
           for tag in $tags; do
+            echo "Pulling image: birutest/qscannerscan:$tag"
+            docker pull birutest/qscannerscan:$tag  # Ensure the image is pulled first
+
+            # Verify that the image is pulled successfully
             image_sha=$(docker inspect -f '{{.Id}}' birutest/qscannerscan:$tag)
+            if [ -z "$image_sha" ]; then
+              echo "Error: Docker image birutest/qscannerscan:$tag not found!"
+              exit 1  # Exit the job if the image is not found
+            fi
+
             echo "Scanning image $index/$total_tags: birutest/qscannerscan:$tag ..."
             sockpath=$(docker info -f '{{.DockerRootDir}}')
             sockpath=$(echo $sockpath | awk -v srch="data" -v repl="docker.sock" '{ sub(srch,repl,$0); print $0 }')
             echo "Docker socket path: $sockpath"
             echo "Running qscanner with image_sha: $image_sha"
-            sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image birutest/qscannerscan:$tag --pod US2 --offline-scan --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }}
+            sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image birutest/qscannerscan:$tag --pod US2 --file-logging --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }}
             index=$((index+1))
           done
