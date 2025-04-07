@@ -44,6 +44,7 @@ jobs:
         run: |
           repo="birutest/qscannerscan"
           tags=$(curl -s "https://hub.docker.com/v2/repositories/$repo/tags?page_size=100" | jq -r '.results[].name')
+          echo "Tags: $tags"
           echo "::set-output name=tags::$tags"
 
       - name: Pull and Scan Images with Qscanner
@@ -51,8 +52,13 @@ jobs:
           # Loop through each tag and run the qscanner for each image
           tags="${{ steps.tags.outputs.tags }}"
           index=1
-          total_tags=$(echo "$tags" | wc -l)
-          
+          total_tags=$(echo "$tags" | wc -w)  # Use wc -w to count words (tags)
+
+          # Debug: Print tags and total_tags
+          echo "Total tags to scan: $total_tags"
+          echo "Tags: $tags"
+
+          # Loop through each tag and scan
           for tag in $tags; do
             echo "Pulling image: birutest/qscannerscan:$tag"
             docker pull birutest/qscannerscan:$tag  # Ensure the image is pulled first
