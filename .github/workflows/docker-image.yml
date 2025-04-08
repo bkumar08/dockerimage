@@ -34,7 +34,7 @@ jobs:
 
       - name: Download Qscanner
         run: |
-          wget https://www.qualys.com/qscanner/download/v4.2.0/download_qscanner.sh
+          wget https://www.qualys.com/qscanner/download/v4.4.0/download_qscanner.sh
           ls -ltr
           pwd
           sudo bash $(pwd)/download_qscanner.sh
@@ -75,7 +75,7 @@ jobs:
             echo "Running qscanner with image_sha: $image_sha"
             
             # Increase the timeout by using the --poll-timeout option and handle errors
-            sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image birutest/qscannerscan:$tag --pod US2 --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }} --report-format json --poll-timeout duration 1800
+            sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image birutest/qscannerscan:$tag --pod US2 --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }} --report-format json --poll-timeout 1800
             if [ $? -ne 0 ]; then
               echo "Warning: Vulnerability scan timed out or failed for birutest/qscannerscan:$tag, but continuing."
             fi
