@@ -65,7 +65,7 @@ jobs:
             image_sha=$(docker inspect -f '{{.Id}}' birutest/qscannerscan:$tag)
             if [ -z "$image_sha" ]; then
               echo "Error: Docker image birutest/qscannerscan:$tag not found!"
-              continue  # Continue with the next tag if the image is not found
+              continue  # continue with the next tag if the image is not found
             fi
 
             echo "Scanning image $index/$total_tags: birutest/qscannerscan:$tag ..."
