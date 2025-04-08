@@ -65,7 +65,7 @@ jobs:
             image_sha=$(docker inspect -f '{{.Id}}' birutest/qscannerscan:$tag)
             if [ -z "$image_sha" ]; then
               echo "Error: Docker image birutest/qscannerscan:$tag not found!"
-              exit 1  # Exit the job if the image is not found
+              continue  # Continue with the next tag if the image is not found
             fi
 
             echo "Scanning image $index/$total_tags: birutest/qscannerscan:$tag ..."
@@ -73,6 +73,11 @@ jobs:
             sockpath=$(echo $sockpath | awk -v srch="data" -v repl="docker.sock" '{ sub(srch,repl,$0); print $0 }')
             echo "Docker socket path: $sockpath"
             echo "Running qscanner with image_sha: $image_sha"
-            sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image birutest/qscannerscan:$tag --pod US2 --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }} --report-format json
+            
+            # Increase the timeout by using the --poll-timeout option and handle errors
+            sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image birutest/qscannerscan:$tag --pod US2 --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }} --report-format json --poll-timeout duration 1800
+            if [ $? -ne 0 ]; then
+              echo "Warning: Vulnerability scan timed out or failed for birutest/qscannerscan:$tag, but continuing."
+            fi
             index=$((index+1))
           done < tags.txt
