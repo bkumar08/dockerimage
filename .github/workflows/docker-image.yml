@@ -75,7 +75,7 @@ jobs:
             echo "Running qscanner with image_sha: $image_sha"
             
             # Increase the timeout by using the --poll-timeout option and handle errors
-            sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image birutest/qscannerscan:$tag --pod US2 --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }} --report-format json --poll-timeout 1800
+            sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image birutest/qscannerscan:$tag --pod US2 --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }} --report-format json --poll-timeout 1800s
             if [ $? -ne 0 ]; then
               echo "Warning: Vulnerability scan timed out or failed for birutest/qscannerscan:$tag, but continuing."
             fi
