@@ -73,6 +73,6 @@ jobs:
             sockpath=$(echo $sockpath | awk -v srch="data" -v repl="docker.sock" '{ sub(srch,repl,$0); print $0 }')
             echo "Docker socket path: $sockpath"
             echo "Running qscanner with image_sha: $image_sha"
-            sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image birutest/qscannerscan:$tag --pod US2 --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }} --file-logging
+            sudo DOCKER_HOST=unix://$sockpath $(pwd)/linux-amd64/qscanner image birutest/qscannerscan:$tag --pod US2 --access-token ${{ secrets.QUALYS_ACCESS_TOKEN }} --report-format json
             index=$((index+1))
           done < tags.txt
