@@ -79,6 +79,8 @@ jobs:
             if [ $? -ne 0 ]; then
               echo "Warning: Vulnerability scan timed out or failed for birutest/qscannerscan:$tag, but continuing."
             fi
+            echo "Cleaning up scan reports from /root/qualys/qscanner/data/"
+            sudo rm -rf /root/qualys/qscanner/data/.*-Report.json
             index=$((index+1))
           done < tags.txt
 
