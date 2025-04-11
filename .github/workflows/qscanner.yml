@@ -81,6 +81,7 @@ jobs:
             fi
             echo "Cleaning up scan reports from /root/qualys/qscanner/data/"
             sudo rm -rf /root/qualys/qscanner/data/.*-Report.json
+            sudo docker rmi -f birutest/qscannerscan:$tag
             index=$((index+1))
           done < tags.txt
 
